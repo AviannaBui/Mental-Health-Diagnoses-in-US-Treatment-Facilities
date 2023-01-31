@@ -1,0 +1,318 @@
+Mental Health Diagnoses and Substance Use Characteristics of Clients in
+US Mental Health Treatment Facilities
+================
+Avianna Bui & Kaylee Do
+
+## Load Packages
+
+``` r
+library(dplyr)
+library(foreign)
+library(ggplot2)
+library(gganimate)
+library(plotly)
+library(scales)
+library(tidyverse)
+library(ggmosaic)
+library(maps) 
+library(ggmap) 
+library(leaflet) 
+library(ggthemes)  
+library(usdata) 
+library(usmap)
+library(maptools)
+library(rgdal)
+```
+
+## Data Loading & Cleaning
+
+``` r
+mental_health <- read.spss("mhcld-2019-sav.sav", to.data.frame = TRUE) %>%
+  select(-c(SPHSERVICE, CMPSERVICE, OPISERVICE, RTCSERVICE, SMISED, SAP, DIVISION, ETHNIC, DETNLF))
+
+pop_2019 <- read_csv("2019pop.csv")
+
+mental_health <- mental_health %>%
+  mutate(SEX = case_when(GENDER == 1 ~ "Male", GENDER == 2 ~ "Female", 
+                         GENDER == 3 ~ "Missing")) %>%
+  mutate(MH_1 = case_when(MH1 == 1 ~ "Trauma- and Stressor-related Disorder",
+                          MH1 == 2 ~ "Anxiety",
+                          MH1 == 3 ~ "Attention-deficit/Hyperactivity Disorder (ADHD)",
+                          MH1 == 4 ~ "Conduct Disorders", 
+                          MH1 == 5 ~ "Delirium, Dementia", 
+                          MH1 == 6 ~ "Bipolar Disorders", 
+                          MH1 == 7 ~ "Depression",
+                          MH1 == 8 ~ "Oppositional Defiant Disorders", 
+                          MH1 == 9 ~ "Pervasive Developmental Disorders",
+                          MH1 == 10 ~ "Personality Disorders", 
+                          MH1 == 11 ~ "Schizophrenia", 
+                          MH1 == 12 ~ "Alcohol/Substance Use Disorder",
+                          MH1 == 13 ~ "Other Disorders/Conditions", 
+                          MH1 == -9 ~ "Missing")) %>%
+  mutate(AGE_VALUE = case_when(AGE == 1 ~ "0-11 years",
+                                AGE == 2 ~ "12-14 years",
+                                AGE == 3 ~ "15-17 years",
+                                AGE == 4 ~ "18-20 years",
+                                AGE == 5 ~ "21-24 years",
+                                AGE == 6 ~ "25-29 years",
+                                AGE == 7 ~ "30-34 years",
+                                AGE == 8 ~ "35-39 years",
+                                AGE == 9 ~ "40-44 years",
+                                AGE == 10 ~ "45-49 years",
+                                AGE == 11 ~ "50-54 years",
+                                AGE == 12 ~ "55-59 years",
+                                AGE == 13 ~ "60-64 years",
+                                AGE == 14 ~ "65 years and over",
+                                AGE == -9 ~ "Missing")) %>%
+   mutate(STATE = case_when(STATEFIP == 1 ~ "Alabama", STATEFIP == 2 ~ "Alaska", 
+                           STATEFIP == 5 ~ "Arkansas", STATEFIP == 6 ~ "California",
+                           STATEFIP == 8 ~ "Colorado", STATEFIP == 9 ~ "Connecticut",
+                           STATEFIP == 10 ~ "Delaware", 
+                           STATEFIP == 11 ~ "District of Columbia", 
+                           STATEFIP == 12 ~ "Florida", STATEFIP == 15 ~ "Hawaii",
+                           STATEFIP == 16 ~ "Idaho", STATEFIP == 17 ~ "Illinois", 
+                           STATEFIP == 18 ~ "Indiana", STATEFIP == 21 ~ "Kentucky", 
+                           STATEFIP == 22 ~ "Louisiana", STATEFIP == 24 ~ "Louisiana",
+                           STATEFIP == 25 ~ "Massachusetts", STATEFIP == 26 ~ "Michigan",
+                           STATEFIP == 27 ~ "Minnesota", STATEFIP == 28 ~ "Mississippi", 
+                           STATEFIP == 29 ~ "Missouri", STATEFIP == 30 ~ "Montana", 
+                           STATEFIP == 31 ~ "Nebraska", STATEFIP == 32 ~ "Nevada",
+                           STATEFIP == 34 ~ "New Jersey", STATEFIP == 35 ~ "New Mexico",
+                           STATEFIP == 36 ~ "New York", STATEFIP == 37 ~ "North Carolina", 
+                           STATEFIP == 38 ~ "North Dakota", STATEFIP == 39 ~ "Ohio",
+                           STATEFIP == 40 ~ "Oklahoma", STATEFIP == 41 ~ "Oregon", 
+                           STATEFIP == 42 ~ "Pennsylvania", STATEFIP == 44 ~ "Rhode Island",
+                           STATEFIP == 45 ~ "South Carolina", 
+                           STATEFIP == 46 ~ "South Dakota", STATEFIP == 47 ~ "Tennessee",
+                           STATEFIP == 48 ~ "Texas", STATEFIP == 49 ~ "Utah",
+                           STATEFIP == 50 ~ "Vermont", STATEFIP == 51 ~ "Virginia", 
+                           STATEFIP == 53 ~ "Washington", STATEFIP == 55 ~ "Wisconsin",
+                           STATEFIP == 56 ~ "Wyoming", STATEFIP == 72 ~ "Puerto Rico", 
+                           STATEFIP == 99 ~ "Other jurisdictions")) %>%
+  filter(!SUB %in% c(3, 8, 13, -9)) %>%
+  mutate(SUBSTANCE_GROUP = case_when(SUB %in% c(1, 2, 4, 9) ~ "Alcohol Use Disorder", 
+                                     SUB %in% c(5, 10) ~ "Cocaine Use Disorder", 
+                                     SUB %in% c(6, 11) ~ "Cannabis Use Disorder", 
+                                     SUB %in% c(7, 12) ~ "Opioid Use Disorder"))
+```
+
+## Visualization & Observations
+
+### Question 1: Whether Different Types of Substance Use Disorders Correlate with Different Mental Health Issues
+
+``` r
+data1 <- mental_health %>%
+  filter(!MH1 %in% c(4, 8, 9, 10, 13, -9)) %>%
+  group_by(MH_1, SUBSTANCE_GROUP) %>%
+    mutate(count = n())
+```
+
+``` r
+plot1 <- data1 %>%
+  ggplot(aes(x = reorder(MH_1,(-count)), fill = SUBSTANCE_GROUP, text = paste("Number of Clients:", count))) +
+  geom_bar() +
+  labs(title = "Number of Clients per Mental and Substance Use Disorder", x = "Mental Disorders", y = "Number of Clients", fill = "Substance Use Disorders") +
+  scale_fill_manual(values = c("#D56AA0", "#7FCA57", "#FCE500", "#410855")) +
+  theme_classic() +
+  theme(plot.title = element_text(size = 12, face = "bold", hjust = 0.5), axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1), text = element_text(family = "serif")) 
+  
+ggplotly(plot1, tooltip = "text")
+```
+
+![](Mental-Health-Diagnoses-Treatment-Facilities_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+
+As seen within the graph, the number of clients who suffer from
+depression is significantly higher than that of any other group of
+mental health clients. For comparison, the next most popular groups
+(clients with alcohol and substance use disorder, schizophrenia or other
+psychotic disorders, and bipolar disorders) are only about two-thirds of
+the number of clients diagnosed with depressive disorders. Meanwhile,
+those with delirium or dementia were the least prevalent, which is
+likely to be due to the age effect, which would be further discussed.
+
+Alcohol use disorder is the most prevalent form of substance use
+disorder, whereas cocaine use disorder is the least common. This is
+understandable considering that alcohol is the only non-illicit drug on
+the list, while cocaine is the most strictly regulated.
+
+In order to better study the percentage of each substance use disorder
+within a mental illness diagnosis, we also adapt the previous graph into
+a proportional bar chart:
+
+``` r
+plot2 <- data1 %>%
+  ggplot(aes(x = reorder(MH_1,(-count)), fill = SUBSTANCE_GROUP)) +
+  geom_bar(position = "fill") +
+  labs(title = "Proportion of Clients per Mental and Substance Use Disorder", x = "Mental Disorders", y = "Proportion", fill = "Substance Use Disorders") +
+  scale_fill_manual(values = c("#D56AA0", "#7FCA57", "#FCE500", "#410855")) +
+  theme_classic() +
+  theme(plot.title = element_text(size = 12, face = "bold", hjust = 0.5), axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1), text = element_text(family = "serif")) 
+  
+ggplotly(plot2, tooltip = "y")
+```
+
+![](Mental-Health-Diagnoses-Treatment-Facilities_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+
+According to the graph, the percentage of clients with alcohol use
+disorder is significantly higher among those with delirium or dementia
+at 68%. As mentioned, alcohol use disorder is the most prevalent
+substance use disorder across all types of mental health problems,
+except for ADHD, in which cannabis use disorder is the most common at
+nearly 50%. Cannabis use disorder is also prevailing among clients with
+schizophrenia or other psychotic disorders, composing over one-third of
+the number of clients within the category.
+
+On the other hand, opioid use disorder is most commonly observed in
+clients with anxiety at nearly one-third of the clients diagnosed with
+anxiety disorders. According to a study, it is estimated that 18.7% of
+adults with a mood or anxiety disorder received multiple prescriptions
+for opioids in 2016, compared to merely 5% of patients without such a
+diagnosis (Zagorski, 2017). Opiates are scarcely prescribed for anxiety
+on purpose; however, their ability to temporarily relieve anxiety often
+causes those with anxiety disorders to use them to counter anxiety
+symptoms. Unfortunately, some might overuse opioids to find alleviation
+from chronic anxiety.
+
+Meanwhile, at 11%, cocaine use disorder is more prevalent in those with
+schizophrenia compared to those with other types of mental health
+problems. According to the self-medication hypothesis, schizophrenic
+patients “may use cocaine to counteract extrapyramidal side effects
+occurring as a result of antipsychotic drug treatment.” (Winklbaur et
+al., 2006). This might explain the higher proportion of cocaine use
+among those with schizophrenia.
+
+### Question 2: Examine the Relationship Between Patients’ Demographical Characteristics and Substance Use Characteristics
+
+The following graph demonstrates the distribution of substance use
+disorder cases among different age groups:
+
+``` r
+data2 <- mental_health %>%
+  filter(AGE != 1) %>%
+  filter(AGE != 2) %>%
+  filter(AGE != 3) %>%
+  filter(AGE != -9)
+```
+
+``` r
+plot3 <- data2 %>%
+  ggplot(aes(x = AGE_VALUE, fill = SUBSTANCE_GROUP)) + 
+  geom_bar(alpha = 0.8, position = "fill") + 
+  scale_fill_manual(values = c("#D56AA0", "#7FCA57", "#FCE500", "#410855")) +
+  labs(x = "Age group", y = "Proportion of patients", title = "Distribution between Age Groups and Substance Use", fill = "Substance Use Disorders") +
+  theme_classic() + 
+  theme(plot.title = element_text(size = 12, face = "bold", hjust = 0.5), axis.text.x = element_text(angle = 45, hjust = 1), text = element_text(family = "serif")) 
+  
+ggplotly(plot3)
+```
+
+![](Mental-Health-Diagnoses-Treatment-Facilities_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
+
+The percentage of those with alcohol use disorder is higher in older age
+groups with the highest group reporting alcohol use being those of 65 or
+older at around 68%. Meanwhile, cannabis use is higher in younger age
+groups with the highest group reporting cannabis use being those between
+18 and 20(73.4%). Cocaine use disorder is the lowest among the 4
+categories, mainly affecting patients between the ages of 40 and 65. In
+the meantime, opioid use disorder is most prevalent among those between
+25 and 45, with the highest age group reporting opioid use being those
+between 30 and 34 years old (28%).
+
+Taking under consideration the social context surrounding substance
+control and substance use, it is understandable how cocaine and opioid
+use is much lower than alcohol and cannabis due to strict regulations
+and laws prohibiting the manufacturing, usage or distribution of these
+drugs. In terms of the contradicting trends between cannabis and alcohol
+use, we suspect that this is connected to the social perceptions of
+these substances. While both of these substances are relatively
+accessible, cannabis use is more common in younger patients due to its
+social values. For older patients, while there is research suggesting an
+increasing use of cannabis in groups of 65 and older, alcohol has always
+been more accessible to them. Given that recreational cannabis has only
+been legalized in certain states and municipal areas, alcohol continues
+to be the most accessible substance. Since alcohol use disorders are
+more popular among older people, it is understandable to observe a link
+between alcohol misuse and delirium or dementia diagnoses, which mostly
+happen in older adults.
+
+We were also curious about the distribution between the different
+genders and substance use. The following bar graph exhibits the
+different in substance use characteristics between male-identifying
+patients and female-identifying students. We wanted to address that this
+data set coded and categorized patients only as male and female, without
+accounting for non-binary patients.
+
+``` r
+plot4 <- data2 %>%
+  filter(GENDER != -9) %>%
+  drop_na(SEX) %>%
+  ggplot() +
+  geom_mosaic(aes(x = product(SUBSTANCE_GROUP, SEX), fill = SUBSTANCE_GROUP)) + 
+  scale_fill_manual(values = c("#D56AA0", "#7FCA57", "#FCE500", "#410855")) +
+  labs(x = "Gender", y = "Proportions of Patients", title = "Distribution between Gender and Substance Use", fill = "Substance Use Disorders") + 
+  theme_classic() +
+  theme(plot.title = element_text(size = 12, face = "bold", hjust = 0.5), axis.text.x = element_text(angle = 45, hjust = 1), text = element_text(family = "serif")) 
+
+ggplotly(plot4 + scale_y_continuous(labels = label_comma()))
+```
+
+    ## Warning: `unite_()` was deprecated in tidyr 1.2.0.
+    ## ℹ Please use `unite()` instead.
+    ## ℹ The deprecated feature was likely used in the ggmosaic package.
+    ##   Please report the issue at <]8;;https://github.com/haleyjeppson/ggmosaichttps://github.com/haleyjeppson/ggmosaic]8;;>.
+
+![](Mental-Health-Diagnoses-Treatment-Facilities_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
+
+This plot reveals that there are more male-identifying patients in the
+data set with substance use disorder compared to female patients. With
+that said, both cannabis and alcohol use is more prominent in
+male-identifying patients but opioid use is higher in female-identifying
+patients. Together with the previous findings of the age groups most
+affected by each substance, we suspect that opioid use can be partly
+explained by prescribed pain medications. According to reports by the
+National Institute for Drug Abuse, of those who began abusing opioids in
+the 2000s, 75 percent reported that their first opioid was a
+prescription drug (U.S. Department of Health and Human Services, 2022,
+p.3)
+
+### Question 3: Examine the Percentage of Cannabis Use Disorder per US State Population in 2019
+
+``` r
+cannabis_by_state <- mental_health %>%
+  filter(SUBSTANCE_GROUP == "Cannabis Use Disorder") %>%
+  filter(STATE != "Other jurisdictions") %>%
+  left_join(pop_2019, by = c("STATE" = "STATE")) %>%
+  count(STATE, POPESTIMATE2019) %>%
+  mutate(perc = n*100 / POPESTIMATE2019) %>%
+  mutate(state_name = str_to_lower(STATE))
+```
+
+``` r
+states_map <- map_data("state")
+
+cannabis_by_state %>%
+  ggplot() +
+  geom_map(
+    map = states_map,
+    aes(
+      map_id = state_name,
+      fill = perc
+    )
+  ) +
+  labs(title = "Cannabis Use Disorder Cases per State Population, 2019", fill = "Percentage") +
+  scale_fill_viridis_c() + 
+  expand_limits(x = states_map$long, y = states_map$lat) +
+  theme_map() + 
+  theme(plot.title = element_text(size = 12, face = "bold", hjust = 0.5), text = element_text(family = "serif")) 
+```
+
+![](Mental-Health-Diagnoses-Treatment-Facilities_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
+
+The map demonstrates that in general, the rate of cannabis use disorder
+per state population in 2019 is higher in Northeast and Midwest region
+of the US. Meanwhile, the West and the South tend to have a lower
+percentage of marijuana use disorder, at around 5% to 10%. However, it
+is a Western state, Montana, that has the highest rate of cannabis
+misuse at 25%. Other states with notably high rates of cannabis use
+disorder are Minnesota, Ohio, and Rhode Island (approximately 20%),
+followed by Louisiana, Kentucky, Oregon and Connecticut at around 15%.
