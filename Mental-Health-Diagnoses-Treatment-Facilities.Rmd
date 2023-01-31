@@ -178,7 +178,7 @@ Taking under consideration the social context surrounding substance control and 
 
 We were also curious about the distribution between the different genders and substance use. The following bar graph exhibits the different in substance use characteristics between male-identifying patients and female-identifying students. We wanted to address that this data set coded and categorized patients only as male and female, without accounting for non-binary patients.
 
-```{r}
+```{r, warning=F}
 plot4 <- data2 %>%
   filter(GENDER != -9) %>%
   drop_na(SEX) %>%

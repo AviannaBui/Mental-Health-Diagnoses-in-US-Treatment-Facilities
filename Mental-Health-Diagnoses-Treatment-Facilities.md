@@ -256,11 +256,6 @@ plot4 <- data2 %>%
 ggplotly(plot4 + scale_y_continuous(labels = label_comma()))
 ```
 
-    ## Warning: `unite_()` was deprecated in tidyr 1.2.0.
-    ## ℹ Please use `unite()` instead.
-    ## ℹ The deprecated feature was likely used in the ggmosaic package.
-    ##   Please report the issue at <]8;;https://github.com/haleyjeppson/ggmosaichttps://github.com/haleyjeppson/ggmosaic]8;;>.
-
 ![](Mental-Health-Diagnoses-Treatment-Facilities_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
 
 This plot reveals that there are more male-identifying patients in the
