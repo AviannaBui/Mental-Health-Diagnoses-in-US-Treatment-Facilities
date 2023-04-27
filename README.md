@@ -43,7 +43,7 @@ Meanwhile, at 11%, cocaine use disorder is more prevalent in those with schizoph
 
 The following graph demonstrates the distribution of substance use disorder cases among different age groups:
 
-![](Mental-Health-Diagnoses-Treatment-Facilities_files/figure-gfm/unnamed-chunk-7-1.png) 
+![](Mental-Health-Diagnoses-Treatment-Facilities_files/figure-gfm/unnamed-chunk-7-1.png#center) 
 
 The percentage of those with alcohol use disorder is higher in older age groups with the highest group reporting alcohol use being those of 65 or older at around 68%. Meanwhile, cannabis use is higher in younger age groups with the highest group reporting cannabis use being those between 18 and 20(73.4%). Cocaine use disorder is the lowest among the 4 categories, mainly affecting patients between the ages of 40 and 65. In the meantime, opioid use disorder is most prevalent among those between 25 and 45, with the highest age group reporting opioid use being those between 30 and 34 years old (28%).
 
@@ -51,13 +51,13 @@ Taking under consideration the social context surrounding substance control and 
 
 We were also curious about the distribution between the different genders and substance use. The following bar graph exhibits the different in substance use characteristics between male-identifying patients and female-identifying students. We wanted to address that this data set coded and categorized patients only as male and female, without accounting for non-binary patients.
 
-![](Mental-Health-Diagnoses-Treatment-Facilities_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
+<center><![](Mental-Health-Diagnoses-Treatment-Facilities_files/figure-gfm/unnamed-chunk-8-1.png)></center>
 
 This plot reveals that there are more male-identifying patients in the data set with substance use disorder compared to female patients. With that said, both cannabis and alcohol use is more prominent in male-identifying patients but opioid use is higher in female-identifying patients. Together with the previous findings of the age groups most affected by each substance, we suspect that opioid use can be partly explained by prescribed pain medications. According to reports by the National Institute for Drug Abuse, of those who began abusing opioids in the 2000s, 75 percent reported that their first opioid was a prescription drug (U.S. Department of Health and Human Services, 2022, p.3)
 
 ### Question 3: Prevalence of Cannabis Use Disorder per US State Population in 2019
 
-->![](Mental-Health-Diagnoses-Treatment-Facilities_files/figure-gfm/unnamed-chunk-10-1.png)<-
+--> ![](Mental-Health-Diagnoses-Treatment-Facilities_files/figure-gfm/unnamed-chunk-10-1.png) <--
 
 The map demonstrates that in general, the rate of cannabis use disorder per state population in 2019 is higher in Northeast and Midwest region of the US. Meanwhile, the West and the South tend to have a lower percentage of marijuana use disorder, at around 5% to 10%. However, it is a Western state, Montana, that has the highest rate of cannabis misuse at 25%. Other states with notably high rates of cannabis use disorder are Minnesota, Ohio, and Rhode Island (approximately 20%), followed by Louisiana, Kentucky, Oregon and Connecticut at around 15%.
 
