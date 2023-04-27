@@ -58,7 +58,7 @@ This plot reveals that there are more male-identifying patients in the data set 
 ### Question 3: Prevalence of Cannabis Use Disorder per US State Population in 2019
 
 <p align="center">
-  <![](Mental-Health-Diagnoses-Treatment-Facilities_files/figure-gfm/unnamed-chunk-10-1.png)>
+  <img src="Mental-Health-Diagnoses-Treatment-Facilities_files/figure-gfm/unnamed-chunk-10-1.png">
 </p>
 
 The map demonstrates that in general, the rate of cannabis use disorder per state population in 2019 is higher in Northeast and Midwest region of the US. Meanwhile, the West and the South tend to have a lower percentage of marijuana use disorder, at around 5% to 10%. However, it is a Western state, Montana, that has the highest rate of cannabis misuse at 25%. Other states with notably high rates of cannabis use disorder are Minnesota, Ohio, and Rhode Island (approximately 20%), followed by Louisiana, Kentucky, Oregon and Connecticut at around 15%.
