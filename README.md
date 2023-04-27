@@ -22,7 +22,7 @@ More significantly, there is a strong trend in the distribution of subtypes of s
 ### Question 1: Correlation of Subtypes of Substance Use Disorders and Mental Health Diagnoses
 
 <p align="center">
-![](Mental-Health-Diagnoses-Treatment-Facilities_files/figure-gfm/unnamed-chunk-4-1.png) 
+  <![](Mental-Health-Diagnoses-Treatment-Facilities_files/figure-gfm/unnamed-chunk-4-1.png)>
 </p>
 
 As seen within the graph, the number of clients who suffer from depression is significantly higher than that of any other group of mental health clients. For comparison, the next most popular groups (clients with alcohol and substance use disorder, schizophrenia or other psychotic disorders, and bipolar disorders) are only about two-thirds of the number of clients diagnosed with depressive disorders. Meanwhile, those with delirium or dementia were the least prevalent, which is likely to be due to the age effect, which would be further discussed.
